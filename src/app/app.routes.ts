@@ -8,5 +8,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./pages/tasks/tasks.component').then(m => m.TasksComponent),
   },
+
+  {
+    path: 'calendar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/calendar/calendar.component').then(m => m.CalendarComponent),
+  },
+
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 ];

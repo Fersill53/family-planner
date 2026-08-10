@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Injector, inject, runInInjectionContext } from '@angular/core';
 import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, user, updateProfile, User } from '@angular/fire/auth';
 import { Firestore, doc, setDoc, docData } from '@angular/fire/firestore';
 import { Observable, of, switchMap } from 'rxjs';
@@ -8,6 +8,7 @@ import { FamilyMember } from '../models';
     export class AuthService {
         private auth = inject(Auth);
         private db = inject(Firestore);
+        private injector = inject(Injector);
 
         /** Emits Firebase auth user (or null when logged out) */
         readonly user$: Observable <User | null> = user(this.auth);
@@ -33,7 +34,9 @@ import { FamilyMember } from '../models';
                 familyId,
             };
 
-            await setDoc(doc(this.db, 'users', cred.user.uid), member);
+            await runInInjectionContext(this.injector, () =>
+                setDoc(doc(this.db, 'users', cred.user.uid), member)
+            );
             return cred.user;
         }
 

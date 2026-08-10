@@ -21,5 +21,14 @@
     "overloaded": "{{name}} has more than their share",
     "none": "No tasks yet - add one above"
   },
-  "profile": { "language": "Language", "save": "Save" }
+  "profile": { "language": "Language", "save": "Save" },
+
+  "cal": {
+    "month": "Month",
+    "week": "Week",
+    "agenda": "Agenda",
+    "today": "Today",
+    "noUpcoming": "No upcoming tasks",
+    "noTasksDay": "Nothing scheduled for this day"
+  }
 }

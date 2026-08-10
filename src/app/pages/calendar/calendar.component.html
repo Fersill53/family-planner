@@ -1,0 +1,126 @@
+<div class="page">
+  <header class="topbar">
+    <h1>{{ 'nav.calendar' | translate }}</h1>
+    <button class="link" (click)="goToTasks()">{{ 'nav.tasks' | translate }} →</button>
+  </header>
+
+  <!-- View toggle -->
+  <div class="view-toggle">
+    <button [class.active]="view() === 'month'" (click)="setView('month')">
+      {{ 'cal.month' | translate }}
+    </button>
+    <button [class.active]="view() === 'week'" (click)="setView('week')">
+      {{ 'cal.week' | translate }}
+    </button>
+    <button [class.active]="view() === 'agenda'" (click)="setView('agenda')">
+      {{ 'cal.agenda' | translate }}
+    </button>
+  </div>
+
+  <!-- Nav row (hidden for agenda) -->
+  @if (view() !== 'agenda') {
+    <div class="nav-row">
+      <button class="round" (click)="prev()">‹</button>
+      <div class="label">
+        {{ view() === 'month' ? monthLabel() : weekLabel() }}
+      </div>
+      <button class="round" (click)="next()">›</button>
+      <button class="today-btn" (click)="today()">{{ 'cal.today' | translate }}</button>
+    </div>
+  }
+
+  <!-- MONTH VIEW -->
+  @if (view() === 'month') {
+    <div class="weekday-head">
+      @for (w of weekdayNames; track w) {
+        <span>{{ w }}</span>
+      }
+    </div>
+    <div class="month-grid">
+      @for (cell of monthGrid(); track cell.date.getTime()) {
+        <button
+          class="day-cell"
+          [class.dim]="!cell.inMonth"
+          [class.today]="cell.isToday"
+          [class.selected]="isSelected(cell.date)"
+          (click)="selectDay(cell.date)">
+          <span class="num">{{ cell.date.getDate() }}</span>
+          @if (cell.tasks.length) {
+            <span class="dots">
+              @for (t of cell.tasks.slice(0, 3); track t.id) {
+                <span class="dot" [class.done]="t.completed"></span>
+              }
+            </span>
+          }
+        </button>
+      }
+    </div>
+  }
+
+  <!-- WEEK VIEW -->
+  @if (view() === 'week') {
+    <div class="week-grid">
+      @for (cell of weekGrid(); track cell.date.getTime()) {
+        <button
+          class="week-cell"
+          [class.today]="cell.isToday"
+          [class.selected]="isSelected(cell.date)"
+          (click)="selectDay(cell.date)">
+          <span class="wd">{{ weekdayNames[cell.date.getDay()] }}</span>
+          <span class="num">{{ cell.date.getDate() }}</span>
+          @if (cell.tasks.length) {
+            <span class="count">{{ cell.tasks.length }}</span>
+          }
+        </button>
+      }
+    </div>
+  }
+
+  <!-- AGENDA VIEW -->
+  @if (view() === 'agenda') {
+    <div class="agenda">
+      @for (group of agenda(); track group.date.getTime()) {
+        <div class="agenda-day">
+          <div class="agenda-date">
+            <span class="d">{{ group.date | date:'d' }}</span>
+            <span class="mo">{{ group.date | date:'MMM' }}</span>
+          </div>
+          <ul class="agenda-tasks">
+            @for (t of group.tasks; track t.id) {
+              <li [class.done]="t.completed">
+                <span class="title">{{ t.title }}</span>
+                @if (t.assignedTo) {
+                  <span class="who">{{ memberName(t.assignedTo) }}</span>
+                }
+              </li>
+            }
+          </ul>
+        </div>
+      } @empty {
+        <p class="empty">{{ 'cal.noUpcoming' | translate }}</p>
+      }
+    </div>
+  }
+
+  <!-- SELECTED DAY DETAILS (month + week only) -->
+  @if (view() !== 'agenda') {
+    <div class="details">
+      <h2>{{ selected() | date:'EEEE, MMM d' }}</h2>
+      @if (selectedTasks().length) {
+        <ul class="detail-tasks">
+          @for (t of selectedTasks(); track t.id) {
+            <li [class.done]="t.completed">
+              <span class="title">{{ t.title }}</span>
+              <span class="meta">
+                @if (t.assignedTo) { {{ memberName(t.assignedTo) }} · }
+                {{ t.points }} pts
+              </span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="empty">{{ 'cal.noTasksDay' | translate }}</p>
+      }
+    </div>
+  }
+</div>
