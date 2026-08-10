@@ -15,5 +15,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/calendar/calendar.component').then(m => m.CalendarComponent),
   },
 
+  {
+  path: 'profile',
+  canActivate: [authGuard],
+  loadComponent: () => import('./pages/profile/profile.component').then(m => m.ProfileComponent),
+},
+
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 ];

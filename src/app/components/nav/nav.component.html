@@ -1,0 +1,16 @@
+@if (user()) {
+  <nav class="nav">
+    <a routerLink="/tasks" routerLinkActive="active" class="nav-item">
+      <span class="icon">✓</span>
+      <span class="label">{{ 'nav.tasks' | translate }}</span>
+    </a>
+    <a routerLink="/calendar" routerLinkActive="active" class="nav-item">
+      <span class="icon">▦</span>
+      <span class="label">{{ 'nav.calendar' | translate }}</span>
+    </a>
+    <a routerLink="/profile" routerLinkActive="active" class="nav-item">
+      <span class="icon">☺</span>
+      <span class="label">{{ 'nav.profile' | translate }}</span>
+    </a>
+  </nav>
+}

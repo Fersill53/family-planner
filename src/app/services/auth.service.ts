@@ -1,6 +1,6 @@
 import { Injectable, Injector, inject, runInInjectionContext } from '@angular/core';
 import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, user, updateProfile, User } from '@angular/fire/auth';
-import { Firestore, doc, setDoc, docData } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc, docData, updateDoc } from '@angular/fire/firestore';
 import { Observable, of, switchMap } from 'rxjs';
 import { FamilyMember } from '../models';
 
@@ -46,5 +46,20 @@ import { FamilyMember } from '../models';
 
         logout() {
             return signOut(this.auth);
+        }
+
+        /** Update the current user's Firestore profile (name, language, etc.). */
+        async updateMyProfile(changes: Partial<FamilyMember>) {
+            const u = this.auth.currentUser;
+            if (!u) throw new Error('Not signed in');
+
+            await runInInjectionContext(this.injector, () =>
+                updateDoc(doc(this.db, 'users', u.uid), changes)
+            );
+
+            // keep the Firebase Auth displayName in sync if it changed
+            if (changes.displayName) {
+                await updateProfile(u, { displayName: changes.displayName });
+            }
         }
     }

@@ -21,7 +21,14 @@
     "overloaded": "{{name}} tiene más de lo que le corresponde",
     "none": "Aún no hay tareas — añade una arriba"
   },
-  "profile": { "language": "Idioma", "save": "Guardar" },
+  "profile": { 
+    "language": "Idioma", 
+    "save": "Guardar",
+     "saved": "¡Guardado!",
+    "family": "ID de familia",
+    "household": "Hogar",
+    "you": "Tú"
+},
 
   "cal": {
   "month": "Mes",

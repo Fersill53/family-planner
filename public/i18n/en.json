@@ -21,7 +21,14 @@
     "overloaded": "{{name}} has more than their share",
     "none": "No tasks yet - add one above"
   },
-  "profile": { "language": "Language", "save": "Save" },
+  "profile": { 
+    "language": "Language",
+    "save": "Save",
+    "saved": "Saved!",
+    "family": "Family",
+    "household": "Household",
+    "you": "You"
+ },
 
   "cal": {
     "month": "Month",

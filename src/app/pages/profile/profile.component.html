@@ -1,0 +1,55 @@
+<div class="page">
+  <header class="topbar">
+    <h1>{{ 'nav.profile' | translate }}</h1>
+  </header>
+
+  @if (profile(); as p) {
+    <!-- Edit card -->
+    <div class="card">
+      <label>
+        {{ 'auth.name' | translate }}
+        <input [ngModel]="displayName()" (ngModelChange)="displayName.set($event)" type="text" />
+      </label>
+
+      <label>
+        {{ 'profile.language' | translate }}
+        <select [ngModel]="language()" (ngModelChange)="onLanguageChange($event)">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="uk">Українська</option>
+        </select>
+      </label>
+
+      <div class="family-row">
+        <span class="fam-label">{{ 'profile.family' | translate }}</span>
+        <span class="fam-id">{{ p.familyId }}</span>
+      </div>
+
+      <button (click)="save()" [disabled]="saving()">
+        {{ 'profile.save' | translate }}
+      </button>
+
+      @if (saved()) {
+        <p class="saved-msg">{{ 'profile.saved' | translate }}</p>
+      }
+    </div>
+
+    <!-- Household members -->
+    <div class="card">
+      <h2>{{ 'profile.household' | translate }}</h2>
+      <ul class="members">
+        @for (m of members(); track m.uid) {
+          <li>
+            <span class="avatar">{{ m.displayName.charAt(0) }}</span>
+            <span class="name">{{ m.displayName }}</span>
+            @if (m.uid === p.uid) {
+              <span class="you">{{ 'profile.you' | translate }}</span>
+            }
+          </li>
+        }
+      </ul>
+    </div>
+
+    <button class="logout" (click)="logout()">{{ 'auth.logout' | translate }}</button>
+  }
+</div>
