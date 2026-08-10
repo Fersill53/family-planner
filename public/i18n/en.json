@@ -1,0 +1,25 @@
+{
+  "app": { "title": "Family Scheduler" },
+  "nav": { "tasks": "Tasks", "calendar": "Calendar", "family": "Family", "profile": "Profile" },
+  "auth": {
+    "login": "Log In",
+    "signup": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "name": "Your name",
+    "familyId": "Family ID",
+    "needAccount": "Need an account?",
+    "haveAccount": "Already have an account?",
+    "logout": "Log out"
+  },
+  "tasks": {
+    "add": "Add Task",
+    "assignedTo": "Assigned to",
+    "dueDate": "Due date",
+    "unassigned": "Unassigned",
+    "loadBalance": "Everyone's load looks balanced",
+    "overloaded": "{{name}} has more than their share",
+    "none": "No tasks yet - add one above"
+  },
+  "profile": { "language": "Language", "save": "Save" }
+}

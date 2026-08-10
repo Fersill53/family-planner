@@ -1,0 +1,25 @@
+{
+  "app": { "title": "Organizador Familiar" },
+  "nav": { "tasks": "Tareas", "calendar": "Calendario", "family": "Familia", "profile": "Perfil" },
+  "auth": {
+    "login": "Iniciar sesión",
+    "signup": "Registrarse",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "name": "Tu nombre",
+    "familyId": "ID de familia",
+    "needAccount": "¿Necesitas una cuenta?",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "logout": "Cerrar sesión"
+  },
+  "tasks": {
+    "add": "Añadir tarea",
+    "assignedTo": "Asignado a",
+    "dueDate": "Fecha límite",
+    "unassigned": "Sin asignar",
+    "loadBalance": "La carga de todos está equilibrada",
+    "overloaded": "{{name}} tiene más de lo que le corresponde",
+    "none": "Aún no hay tareas — añade una arriba"
+  },
+  "profile": { "language": "Idioma", "save": "Guardar" }
+}

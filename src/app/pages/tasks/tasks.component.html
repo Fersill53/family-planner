@@ -1,0 +1,70 @@
+<div class="page">
+  <header class="topbar">
+    <h1>{{ 'nav.tasks' | translate }}</h1>
+    <button class="link" (click)="logout()">{{ 'auth.logout' | translate }}</button>
+  </header>
+
+  <!-- Load balance banner -->
+  @if (members().length) {
+    <div class="balance" [class.warn]="isImbalanced()">
+      @if (isImbalanced() && mostLoaded().member) {
+        {{ 'tasks.overloaded' | translate:{ name: mostLoaded().member!.displayName } }}
+      } @else {
+        {{ 'tasks.loadBalance' | translate }}
+      }
+    </div>
+
+    <!-- Per-member load chips -->
+    <div class="chips">
+      @for (m of members(); track m.uid) {
+        <span class="chip">{{ m.displayName }}: {{ loadFor(m.uid) }}</span>
+      }
+    </div>
+  }
+
+  <!-- Add task form -->
+  <div class="add-card">
+    <input [(ngModel)]="newTitle" [placeholder]="'tasks.add' | translate" />
+
+    <select [(ngModel)]="newAssignee">
+      <option value="">{{ 'tasks.unassigned' | translate }}</option>
+      @for (m of members(); track m.uid) {
+        <option [value]="m.uid">{{ m.displayName }}</option>
+      }
+    </select>
+
+    <input type="number" min="1" max="10" [(ngModel)]="newPoints" title="effort" />
+    <input type="date" [(ngModel)]="newDueDate" />
+
+    <button class="ghost" (click)="suggestForNew()" type="button">⚖︎</button>
+    <button (click)="addTask()">{{ 'tasks.add' | translate }}</button>
+  </div>
+
+  <!-- Task list -->
+  <ul class="tasks">
+    @for (t of tasks(); track t.id) {
+      <li [class.done]="t.completed">
+        <input type="checkbox" [checked]="t.completed" (change)="toggleComplete(t)" />
+
+        <div class="body">
+          <span class="title">{{ t.title }}</span>
+          <span class="meta">
+            {{ 'tasks.assignedTo' | translate }}:
+            <select [value]="t.assignedTo || ''" (change)="reassign(t, $any($event.target).value)">
+              <option value="">{{ 'tasks.unassigned' | translate }}</option>
+              @for (m of members(); track m.uid) {
+                <option [value]="m.uid" [selected]="m.uid === t.assignedTo">{{ m.displayName }}</option>
+              }
+            </select>
+            · {{ t.points }} pts
+            @if (t.dueDate) { · {{ t.dueDate | date:'MMM d' }} }
+          </span>
+        </div>
+
+        <button class="del" (click)="removeTask(t)">✕</button>
+      </li>
+    } @empty {
+      <li class="empty">{{ 'tasks.none' | translate }}</li>
+    }
+  </ul>
+</div>

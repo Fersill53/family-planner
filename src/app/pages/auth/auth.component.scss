@@ -1,0 +1,101 @@
+.auth-wrap {
+  max-width: 420px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.5rem;
+
+  h1 {
+    text-align: center;
+    font-size: 1.75rem;
+    color: var(--ink);
+    margin: 0 0 0.5rem;
+  }
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    text-align: center;
+    color: var(--ink);
+  }
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+
+  input, select {
+    padding: 0.8rem 0.9rem;
+    border: 2px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    color: var(--ink);
+    background: var(--bg);
+    transition: border-color 0.15s ease, background 0.15s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: var(--surface);
+    }
+  }
+
+  button {
+    margin-top: 0.25rem;
+    padding: 0.85rem;
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--primary);
+    color: var(--primary-ink);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.15s ease;
+    box-shadow: 0 4px 12px rgba(242, 145, 95, 0.3);
+
+    &:hover:not(:disabled) { transform: translateY(-1px); }
+    &:active:not(:disabled) { transform: translateY(0); }
+    &:disabled { opacity: 0.55; cursor: default; box-shadow: none; }
+  }
+
+  .error {
+    color: #c26248;
+    font-size: 0.85rem;
+    margin: 0;
+    text-align: center;
+    background: var(--warn-soft);
+    padding: 0.6rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .toggle {
+    font-size: 0.9rem;
+    text-align: center;
+    margin: 0;
+    color: var(--ink-soft);
+
+    a {
+      color: var(--primary);
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      &:hover { text-decoration: underline; }
+    }
+  }
+}
