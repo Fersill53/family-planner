@@ -1,0 +1,54 @@
+<div class="auth-wrap">
+  <h1>{{ 'app.title' | translate }}</h1>
+
+  <div class="card">
+    <h2>{{ (mode() === 'login' ? 'auth.login' : 'auth.signup') | translate }}</h2>
+
+    @if (mode() === 'signup') {
+      <label>
+        {{ 'auth.name' | translate }}
+        <input [(ngModel)]="displayName" type="text" autocomplete="name" />
+      </label>
+
+      <label>
+        {{ 'auth.familyId' | translate }}
+        <input [(ngModel)]="familyId" type="text" placeholder="e.g. smith-household" />
+      </label>
+
+      <label>
+        {{ 'profile.language' | translate }}
+        <select [(ngModel)]="language">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="uk">Українська</option>
+        </select>
+      </label>
+    }
+
+    <label>
+      {{ 'auth.email' | translate }}
+      <input [(ngModel)]="email" type="email" autocomplete="email" />
+    </label>
+
+    <label>
+      {{ 'auth.password' | translate }}
+      <input [(ngModel)]="password" type="password"
+             [attr.autocomplete]="mode() === 'signup' ? 'new-password' : 'current-password'" />
+    </label>
+
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+
+    <button (click)="submit()" [disabled]="busy()">
+      {{ (mode() === 'login' ? 'auth.login' : 'auth.signup') | translate }}
+    </button>
+
+    <p class="toggle">
+      {{ (mode() === 'login' ? 'auth.needAccount' : 'auth.haveAccount') | translate }}
+      <a (click)="toggleMode()">
+        {{ (mode() === 'login' ? 'auth.signup' : 'auth.login') | translate }}
+      </a>
+    </p>
+  </div>
+</div>
