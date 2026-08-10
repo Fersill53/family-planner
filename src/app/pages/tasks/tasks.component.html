@@ -4,20 +4,23 @@
     <button class="link" (click)="logout()">{{ 'auth.logout' | translate }}</button>
   </header>
 
-  <!-- Load balance banner -->
+  <!-- Per-member filter chips -->
   @if (members().length) {
-    <div class="balance" [class.warn]="isImbalanced()">
-      @if (isImbalanced() && mostLoaded().member) {
-        {{ 'tasks.overloaded' | translate:{ name: mostLoaded().member!.displayName } }}
-      } @else {
-        {{ 'tasks.loadBalance' | translate }}
-      }
-    </div>
-
-    <!-- Per-member load chips -->
     <div class="chips">
       @for (m of members(); track m.uid) {
-        <span class="chip">{{ m.displayName }}: {{ loadFor(m.uid) }}</span>
+        <button
+          type="button"
+          class="chip"
+          [class.active]="filterUid() === m.uid"
+          (click)="toggleFilter(m.uid)"
+        >
+          {{ m.displayName }}: {{ pointsFor(m.uid) }}
+        </button>
+      }
+      @if (filterUid()) {
+        <button type="button" class="chip clear" (click)="clearFilter()">
+          {{ 'tasks.showAll' | translate }}
+        </button>
       }
     </div>
   }
@@ -36,13 +39,12 @@
     <input type="number" min="1" max="10" [(ngModel)]="newPoints" title="effort" />
     <input type="date" [(ngModel)]="newDueDate" />
 
-    <button class="ghost" (click)="suggestForNew()" type="button">⚖︎</button>
     <button (click)="addTask()">{{ 'tasks.add' | translate }}</button>
   </div>
 
   <!-- Task list -->
   <ul class="tasks">
-    @for (t of tasks(); track t.id) {
+    @for (t of visibleTasks(); track t.id) {
       <li [class.done]="t.completed">
         <input type="checkbox" [checked]="t.completed" (change)="toggleComplete(t)" />
 

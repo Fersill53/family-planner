@@ -17,8 +17,7 @@
     "assignedTo": "Assigned to",
     "dueDate": "Due date",
     "unassigned": "Unassigned",
-    "loadBalance": "Everyone's load looks balanced",
-    "overloaded": "{{name}} has more than their share",
+    "showAll": "Show all",
     "none": "No tasks yet - add one above"
   },
   "profile": { 

@@ -21,10 +21,8 @@ export class TasksComponent {
   private taskSvc = inject(TaskService);
   private router = inject(Router);
 
-  // current user's profile (has familyId)
   profile = toSignal(this.auth.profile$, { initialValue: null });
 
-  // tasks + members for this family, re-fetched when profile loads
   tasks = toSignal(
     this.auth.profile$.pipe(
       switchMap(p => (p ? this.taskSvc.tasks$(p.familyId) : of([] as Task[])))
@@ -45,27 +43,22 @@ export class TasksComponent {
   newPoints = 1;
   newDueDate = '';
 
-  // load per member, computed reactively
-  load = computed(() => this.taskSvc.loadByMember(this.tasks(), this.members()));
+  // filter: which member's tasks to show (null = everyone)
+  filterUid = signal<string | null>(null);
 
-  // the member carrying the most, and whether they're overloaded
-  mostLoaded = computed<{ member: FamilyMember | null; points: number }>(() => {
-    const members = this.members();
-    const load = this.load();
-    if (!members.length) return { member: null, points: 0 };
-    let top = members[0];
-    for (const m of members) {
-      if ((load.get(m.uid) ?? 0) > (load.get(top.uid) ?? 0)) top = m;
-    }
-    return { member: top, points: load.get(top.uid) ?? 0 };
-  });
+  // sum of points per member (open tasks only) — for the chips
+  pointsByMember = computed(() => this.taskSvc.loadByMember(this.tasks(), this.members()));
 
-  // simple heuristic: overloaded if one person has >50% of all open points
-  isImbalanced = computed(() => {
-    const load = this.load();
-    const total = [...load.values()].reduce((a, b) => a + b, 0);
-    if (total === 0) return false;
-    return this.mostLoaded().points > total * 0.5;
+  pointsFor(uid: string): number {
+    return this.pointsByMember().get(uid) ?? 0;
+  }
+
+  // the visible task list, honoring the person filter
+  visibleTasks = computed(() => {
+    const f = this.filterUid();
+    const all = this.tasks();
+    if (!f) return all;
+    return all.filter(t => t.assignedTo === f);
   });
 
   memberName(uid: string | null): string {
@@ -73,9 +66,11 @@ export class TasksComponent {
     return this.members().find(m => m.uid === uid)?.displayName ?? '';
   }
 
-  loadFor(uid: string): number {
-    return this.load().get(uid) ?? 0;
+  toggleFilter(uid: string) {
+    this.filterUid.set(this.filterUid() === uid ? null : uid);
   }
+
+  clearFilter() { this.filterUid.set(null); }
 
   async addTask() {
     const p = this.profile();
@@ -96,12 +91,6 @@ export class TasksComponent {
     this.newAssignee = '';
     this.newPoints = 1;
     this.newDueDate = '';
-  }
-
-  // auto-assign the new task to whoever has the lightest load
-  suggestForNew() {
-    const s = this.taskSvc.suggestAssignee(this.tasks(), this.members());
-    if (s) this.newAssignee = s.uid;
   }
 
   toggleComplete(t: Task) {

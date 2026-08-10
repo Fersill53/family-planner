@@ -17,8 +17,7 @@
     "assignedTo": "Asignado a",
     "dueDate": "Fecha límite",
     "unassigned": "Sin asignar",
-    "loadBalance": "La carga de todos está equilibrada",
-    "overloaded": "{{name}} tiene más de lo que le corresponde",
+    "showAll": "Mostrar todas",
     "none": "Aún no hay tareas — añade una arriba"
   },
   "profile": { 
