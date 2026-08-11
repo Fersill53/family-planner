@@ -172,7 +172,7 @@
         <ul class="detail-tasks">
           @for (e of selectedEvents(); track occKey(e)) {
             @if (isEditing(e)) {
-              <li class="event-row edit-row">
+              <li class="event-row edit-row event-form">
                 <input [(ngModel)]="editTitle" [placeholder]="'cal.eventTitle' | translate" />
                 <div class="row">
                   <input type="date" [(ngModel)]="editDate" />
