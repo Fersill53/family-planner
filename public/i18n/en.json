@@ -35,6 +35,16 @@
     "agenda": "Agenda",
     "today": "Today",
     "noUpcoming": "No upcoming tasks",
-    "noTasksDay": "Nothing scheduled for this day"
+    "noTasksDay": "Nothing scheduled for this day",
+    "addEvent": "Add event",
+    "eventTitle": "Event title (e.g. work shift)",
+    "saveEvent": "Save event",
+    "until": "Repeat until",
+    "freq": {
+      "none": "Doesn't repeat",
+      "daily": "Repeats daily",
+      "weekly": "Repeats weekly",
+      "monthly": "Repeats monthly"
+    }
   }
 }

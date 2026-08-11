@@ -29,6 +29,53 @@
     </div>
   }
 
+  <!-- Add event -->
+  <button class="add-event-toggle" (click)="toggleEventForm()" type="button">
+    + {{ 'cal.addEvent' | translate }}
+  </button>
+
+  @if (showEventForm()) {
+    <div class="event-form">
+      <input [(ngModel)]="newEventTitle" [placeholder]="'cal.eventTitle' | translate" />
+
+      <div class="row">
+        <input type="date" [(ngModel)]="newEventDate" />
+        <input type="time" [(ngModel)]="newEventStart" />
+        <span class="to">–</span>
+        <input type="time" [(ngModel)]="newEventEnd" />
+      </div>
+
+      <div class="row">
+        <select [(ngModel)]="newEventFreq">
+          <option value="none">{{ 'cal.freq.none' | translate }}</option>
+          <option value="daily">{{ 'cal.freq.daily' | translate }}</option>
+          <option value="weekly">{{ 'cal.freq.weekly' | translate }}</option>
+          <option value="monthly">{{ 'cal.freq.monthly' | translate }}</option>
+        </select>
+        @if (newEventFreq !== 'none') {
+          <input type="date" [(ngModel)]="newEventUntil" [title]="'cal.until' | translate" />
+        }
+      </div>
+
+      @if (members().length) {
+        <div class="assignees">
+          @for (m of members(); track m.uid) {
+            <button
+              type="button"
+              class="chip"
+              [class.active]="isNewAssignee(m.uid)"
+              (click)="toggleNewAssignee(m.uid)"
+            >
+              {{ m.displayName }}
+            </button>
+          }
+        </div>
+      }
+
+      <button class="save" (click)="addEvent()">{{ 'cal.saveEvent' | translate }}</button>
+    </div>
+  }
+
   <!-- MONTH VIEW -->
   @if (view() === 'month') {
     <div class="weekday-head">
@@ -45,10 +92,13 @@
           [class.selected]="isSelected(cell.date)"
           (click)="selectDay(cell.date)">
           <span class="num">{{ cell.date.getDate() }}</span>
-          @if (cell.tasks.length) {
+          @if (cell.tasks.length || cell.events.length) {
             <span class="dots">
               @for (t of cell.tasks.slice(0, 3); track t.id) {
-                <span class="dot" [class.done]="t.completed"></span>
+                <span class="dot task" [class.done]="t.completed"></span>
+              }
+              @for (e of cell.events.slice(0, 3); track e.event.id + '-' + e.start.getTime()) {
+                <span class="dot event"></span>
               }
             </span>
           }
@@ -68,8 +118,11 @@
           (click)="selectDay(cell.date)">
           <span class="wd">{{ weekdayNames[cell.date.getDay()] }}</span>
           <span class="num">{{ cell.date.getDate() }}</span>
-          @if (cell.tasks.length) {
-            <span class="count">{{ cell.tasks.length }}</span>
+          @if (cell.tasks.length || cell.events.length) {
+            <span class="counts">
+              @if (cell.tasks.length) { <span class="count task">{{ cell.tasks.length }}</span> }
+              @if (cell.events.length) { <span class="count event">{{ cell.events.length }}</span> }
+            </span>
           }
         </button>
       }
@@ -86,6 +139,15 @@
             <span class="mo">{{ group.date | date:'MMM' }}</span>
           </div>
           <ul class="agenda-tasks">
+            @for (e of group.events; track e.event.id + '-' + e.start.getTime()) {
+              <li class="event-row">
+                <span class="time">{{ e.start | date:'HH:mm' }}</span>
+                <span class="title">{{ e.event.title }}</span>
+                @if (e.event.assignedTo.length) {
+                  <span class="who">{{ assigneeNames(e.event.assignedTo) }}</span>
+                }
+              </li>
+            }
             @for (t of group.tasks; track t.id) {
               <li [class.done]="t.completed">
                 <span class="title">{{ t.title }}</span>
@@ -106,8 +168,22 @@
   @if (view() !== 'agenda') {
     <div class="details">
       <h2>{{ selected() | date:'EEEE, MMM d' }}</h2>
-      @if (selectedTasks().length) {
+      @if (selectedEvents().length || selectedTasks().length) {
         <ul class="detail-tasks">
+          @for (e of selectedEvents(); track e.event.id + '-' + e.start.getTime()) {
+            <li class="event-row">
+              <span class="title">
+                {{ e.start | date:'HH:mm' }}–{{ e.end | date:'HH:mm' }} · {{ e.event.title }}
+              </span>
+              <span class="meta">
+                @if (e.event.assignedTo.length) { {{ assigneeNames(e.event.assignedTo) }} }
+                @if (e.event.recurrence.freq !== 'none') {
+                  <span class="recur">↻ {{ 'cal.freq.' + e.event.recurrence.freq | translate }}</span>
+                }
+                <button class="del" (click)="removeEvent(e.event)">✕</button>
+              </span>
+            </li>
+          }
           @for (t of selectedTasks(); track t.id) {
             <li [class.done]="t.completed">
               <span class="title">{{ t.title }}</span>

@@ -1,12 +1,14 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { switchMap, of } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { TaskService } from '../../services/task.service';
-import { Task, FamilyMember } from '../../models';
+import { EventService } from '../../services/event.service';
+import { Task, FamilyMember, CalendarEvent, EventOccurrence, RecurrenceFreq } from '../../models';
 
 type ViewMode = 'month' | 'week' | 'agenda';
 
@@ -15,18 +17,22 @@ interface DayCell {
   inMonth: boolean;   // for month view greying of adjacent days
   isToday: boolean;
   tasks: Task[];
+  events: EventOccurrence[];
 }
+
+const AGENDA_WINDOW_DAYS = 60;
 
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss',
 })
 export class CalendarComponent {
   private auth = inject(AuthService);
   private taskSvc = inject(TaskService);
+  private eventSvc = inject(EventService);
   private router = inject(Router);
 
   view = signal<ViewMode>('month');
@@ -40,6 +46,13 @@ export class CalendarComponent {
       switchMap(p => (p ? this.taskSvc.tasks$(p.familyId) : of([] as Task[])))
     ),
     { initialValue: [] as Task[] }
+  );
+
+  events = toSignal(
+    this.auth.profile$.pipe(
+      switchMap(p => (p ? this.eventSvc.events$(p.familyId) : of([] as CalendarEvent[])))
+    ),
+    { initialValue: [] as CalendarEvent[] }
   );
 
   members = toSignal(
@@ -77,6 +90,15 @@ export class CalendarComponent {
     });
   }
 
+  private eventsOn(date: Date): EventOccurrence[] {
+    const rangeStart = this.startOfDay(date);
+    const rangeEnd = new Date(rangeStart);
+    rangeEnd.setDate(rangeEnd.getDate() + 1);
+    return this.eventSvc
+      .occurrencesInRange(this.events(), rangeStart, rangeEnd)
+      .filter(o => this.sameDay(o.start, date));
+  }
+
   // ---- month grid (6 weeks = 42 cells) ----
   monthGrid = computed<DayCell[]>(() => {
     const cur = this.cursor();
@@ -96,6 +118,7 @@ export class CalendarComponent {
         inMonth: date.getMonth() === month,
         isToday: this.sameDay(date, today),
         tasks: this.tasksOn(date),
+        events: this.eventsOn(date),
       });
     }
     return cells;
@@ -117,31 +140,46 @@ export class CalendarComponent {
         inMonth: true,
         isToday: this.sameDay(date, today),
         tasks: this.tasksOn(date),
+        events: this.eventsOn(date),
       });
     }
     return cells;
   });
 
-  // ---- agenda (upcoming dated tasks grouped by day) ----
-  agenda = computed<{ date: Date; tasks: Task[] }[]>(() => {
+  // ---- agenda (upcoming dated tasks + events grouped by day) ----
+  agenda = computed<{ date: Date; tasks: Task[]; events: EventOccurrence[] }[]>(() => {
     const today = this.startOfDay(new Date());
-    const groups = new Map<number, { date: Date; tasks: Task[] }>();
+    const windowEnd = new Date(today);
+    windowEnd.setDate(windowEnd.getDate() + AGENDA_WINDOW_DAYS);
+
+    const groups = new Map<number, { date: Date; tasks: Task[]; events: EventOccurrence[] }>();
+
+    const dayGroup = (day: Date) => {
+      const key = day.getTime();
+      if (!groups.has(key)) groups.set(key, { date: day, tasks: [], events: [] });
+      return groups.get(key)!;
+    };
 
     for (const t of this.tasks()) {
       const d = this.toDate(t.dueDate);
       if (!d) continue;
       const day = this.startOfDay(d);
-      if (day < today) continue;                        // upcoming only
-      const key = day.getTime();
-      if (!groups.has(key)) groups.set(key, { date: day, tasks: [] });
-      groups.get(key)!.tasks.push(t);
+      if (day < today) continue; // upcoming only
+      dayGroup(day).tasks.push(t);
+    }
+
+    for (const occ of this.eventSvc.occurrencesInRange(this.events(), today, windowEnd)) {
+      const day = this.startOfDay(occ.start);
+      if (day < today) continue;
+      dayGroup(day).events.push(occ);
     }
 
     return [...groups.values()].sort((a, b) => a.date.getTime() - b.date.getTime());
   });
 
-  // tasks for the selected day (details panel)
+  // tasks/events for the selected day (details panel)
   selectedTasks = computed<Task[]>(() => this.tasksOn(this.selected()));
+  selectedEvents = computed<EventOccurrence[]>(() => this.eventsOn(this.selected()));
 
   // ---- labels ----
   monthLabel = computed(() => {
@@ -162,6 +200,10 @@ export class CalendarComponent {
   memberName(uid: string | null): string {
     if (!uid) return '';
     return this.members().find(m => m.uid === uid)?.displayName ?? '';
+  }
+
+  assigneeNames(uids: string[]): string {
+    return uids.map(u => this.memberName(u)).filter(Boolean).join(', ');
   }
 
   // ---- interactions ----
@@ -190,4 +232,62 @@ export class CalendarComponent {
   }
 
   goToTasks() { this.router.navigate(['/tasks']); }
+
+  // ---- add-event form ----
+  showEventForm = signal(false);
+  newEventTitle = '';
+  newEventDate = '';
+  newEventStart = '';
+  newEventEnd = '';
+  newEventFreq: RecurrenceFreq = 'none';
+  newEventUntil = '';
+  newEventAssignees = signal<string[]>([]);
+
+  toggleEventForm() { this.showEventForm.set(!this.showEventForm()); }
+
+  isNewAssignee(uid: string): boolean {
+    return this.newEventAssignees().includes(uid);
+  }
+
+  toggleNewAssignee(uid: string) {
+    const cur = this.newEventAssignees();
+    this.newEventAssignees.set(
+      cur.includes(uid) ? cur.filter(x => x !== uid) : [...cur, uid]
+    );
+  }
+
+  async addEvent() {
+    const p = this.profile();
+    if (!p || !this.newEventTitle.trim() || !this.newEventDate || !this.newEventStart || !this.newEventEnd) return;
+
+    const start = new Date(`${this.newEventDate}T${this.newEventStart}`);
+    const end = new Date(`${this.newEventDate}T${this.newEventEnd}`);
+    if (end <= start) return;
+
+    const event: Omit<CalendarEvent, 'id'> = {
+      familyId: p.familyId,
+      title: this.newEventTitle.trim(),
+      start,
+      end,
+      assignedTo: this.newEventAssignees(),
+      recurrence: {
+        freq: this.newEventFreq,
+        until: this.newEventUntil ? new Date(this.newEventUntil) : null,
+      },
+      createdAt: new Date(),
+    };
+    await this.eventSvc.add(event);
+
+    this.newEventTitle = '';
+    this.newEventDate = '';
+    this.newEventStart = '';
+    this.newEventEnd = '';
+    this.newEventFreq = 'none';
+    this.newEventUntil = '';
+    this.newEventAssignees.set([]);
+  }
+
+  removeEvent(ev: CalendarEvent) {
+    if (ev.id) this.eventSvc.remove(ev.id);
+  }
 }

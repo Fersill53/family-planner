@@ -35,6 +35,16 @@
   "agenda": "Agenda",
   "today": "Hoy",
   "noUpcoming": "No hay tareas próximas",
-  "noTasksDay": "Nada programado para este día"
+  "noTasksDay": "Nada programado para este día",
+  "addEvent": "Añadir evento",
+  "eventTitle": "Título del evento (p. ej. turno de trabajo)",
+  "saveEvent": "Guardar evento",
+  "until": "Repetir hasta",
+  "freq": {
+    "none": "No se repite",
+    "daily": "Se repite a diario",
+    "weekly": "Se repite semanalmente",
+    "monthly": "Se repite mensualmente"
+  }
 }
 }
