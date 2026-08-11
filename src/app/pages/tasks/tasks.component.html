@@ -59,7 +59,7 @@
               }
             </select>
             · {{ t.points }} pts
-            @if (t.dueDate) { · {{ t.dueDate | date:'MMM d' }} }
+            @if (t.dueDate) { · {{ dueDateOf(t) | date:'MMM d' }} }
           </span>
         </div>
 
