@@ -39,6 +39,11 @@
     "addEvent": "Add event",
     "eventTitle": "Event title (e.g. work shift)",
     "saveEvent": "Save event",
+    "saveThis": "Save this event",
+    "saveAll": "Save all events",
+    "cancel": "Cancel",
+    "deleteThis": "Delete this event",
+    "deleteAll": "Delete all events",
     "until": "Repeat until",
     "freq": {
       "none": "Doesn't repeat",

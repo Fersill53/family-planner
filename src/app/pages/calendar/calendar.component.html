@@ -97,7 +97,7 @@
               @for (t of cell.tasks.slice(0, 3); track t.id) {
                 <span class="dot task" [class.done]="t.completed"></span>
               }
-              @for (e of cell.events.slice(0, 3); track e.event.id + '-' + e.start.getTime()) {
+              @for (e of cell.events.slice(0, 3); track occKey(e)) {
                 <span class="dot event"></span>
               }
             </span>
@@ -139,12 +139,12 @@
             <span class="mo">{{ group.date | date:'MMM' }}</span>
           </div>
           <ul class="agenda-tasks">
-            @for (e of group.events; track e.event.id + '-' + e.start.getTime()) {
+            @for (e of group.events; track occKey(e)) {
               <li class="event-row">
                 <span class="time">{{ e.start | date:'HH:mm' }}</span>
-                <span class="title">{{ e.event.title }}</span>
-                @if (e.event.assignedTo.length) {
-                  <span class="who">{{ assigneeNames(e.event.assignedTo) }}</span>
+                <span class="title">{{ e.title }}</span>
+                @if (e.assignedTo.length) {
+                  <span class="who">{{ assigneeNames(e.assignedTo) }}</span>
                 }
               </li>
             }
@@ -170,19 +170,61 @@
       <h2>{{ selected() | date:'EEEE, MMM d' }}</h2>
       @if (selectedEvents().length || selectedTasks().length) {
         <ul class="detail-tasks">
-          @for (e of selectedEvents(); track e.event.id + '-' + e.start.getTime()) {
-            <li class="event-row">
-              <span class="title">
-                {{ e.start | date:'HH:mm' }}–{{ e.end | date:'HH:mm' }} · {{ e.event.title }}
-              </span>
-              <span class="meta">
-                @if (e.event.assignedTo.length) { {{ assigneeNames(e.event.assignedTo) }} }
-                @if (e.event.recurrence.freq !== 'none') {
-                  <span class="recur">↻ {{ 'cal.freq.' + e.event.recurrence.freq | translate }}</span>
+          @for (e of selectedEvents(); track occKey(e)) {
+            @if (isEditing(e)) {
+              <li class="event-row edit-row">
+                <input [(ngModel)]="editTitle" [placeholder]="'cal.eventTitle' | translate" />
+                <div class="row">
+                  <input type="date" [(ngModel)]="editDate" />
+                  <input type="time" [(ngModel)]="editStart" />
+                  <span class="to">–</span>
+                  <input type="time" [(ngModel)]="editEnd" />
+                </div>
+                @if (members().length) {
+                  <div class="assignees">
+                    @for (m of members(); track m.uid) {
+                      <button
+                        type="button"
+                        class="chip"
+                        [class.active]="isEditAssignee(m.uid)"
+                        (click)="toggleEditAssignee(m.uid)"
+                      >
+                        {{ m.displayName }}
+                      </button>
+                    }
+                  </div>
                 }
-                <button class="del" (click)="removeEvent(e.event)">✕</button>
-              </span>
-            </li>
+                <div class="edit-actions">
+                  @if (isRecurring(e)) {
+                    <button class="save" (click)="saveEditThis(e)">{{ 'cal.saveThis' | translate }}</button>
+                    <button class="save" (click)="saveEditWhole(e)">{{ 'cal.saveAll' | translate }}</button>
+                  } @else {
+                    <button class="save" (click)="saveEditWhole(e)">{{ 'cal.saveEvent' | translate }}</button>
+                  }
+                  <button class="cancel" (click)="cancelEdit()">{{ 'cal.cancel' | translate }}</button>
+                </div>
+              </li>
+            } @else {
+              <li class="event-row">
+                <span class="title">
+                  {{ e.start | date:'HH:mm' }}–{{ e.end | date:'HH:mm' }} · {{ e.title }}
+                </span>
+                <span class="meta">
+                  @if (e.assignedTo.length) { {{ assigneeNames(e.assignedTo) }} }
+                  @if (isRecurring(e)) {
+                    <span class="recur">↻ {{ 'cal.freq.' + e.recurrence.freq | translate }}</span>
+                  }
+                  @if (isConfirmingDelete(e)) {
+                    <button class="confirm-del" (click)="deleteThisOccurrence(e)">{{ 'cal.deleteThis' | translate }}</button>
+                    <button class="confirm-del" (click)="deleteWholeSeries(e)">{{ 'cal.deleteAll' | translate }}</button>
+                    <button class="cancel" (click)="cancelDelete()">{{ 'cal.cancel' | translate }}</button>
+                  } @else {
+                    <button class="edit" (click)="startEdit(e)">✎</button>
+                    <button class="del" (click)="requestDelete(e)">✕</button>
+                  }
+                </span>
+              </li>
+            }
           }
           @for (t of selectedTasks(); track t.id) {
             <li [class.done]="t.completed">

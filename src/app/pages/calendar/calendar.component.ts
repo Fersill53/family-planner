@@ -8,7 +8,7 @@ import { switchMap, of } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { TaskService } from '../../services/task.service';
 import { EventService } from '../../services/event.service';
-import { Task, FamilyMember, CalendarEvent, EventOccurrence, RecurrenceFreq } from '../../models';
+import { Task, FamilyMember, CalendarEvent, EventOccurrence, EventOverride, RecurrenceFreq } from '../../models';
 
 type ViewMode = 'month' | 'week' | 'agenda';
 
@@ -55,6 +55,13 @@ export class CalendarComponent {
     { initialValue: [] as CalendarEvent[] }
   );
 
+  overrides = toSignal(
+    this.auth.profile$.pipe(
+      switchMap(p => (p ? this.eventSvc.overrides$(p.familyId) : of([] as EventOverride[])))
+    ),
+    { initialValue: [] as EventOverride[] }
+  );
+
   members = toSignal(
     this.auth.profile$.pipe(
       switchMap(p => (p ? this.taskSvc.members$(p.familyId) : of([] as FamilyMember[])))
@@ -95,7 +102,7 @@ export class CalendarComponent {
     const rangeEnd = new Date(rangeStart);
     rangeEnd.setDate(rangeEnd.getDate() + 1);
     return this.eventSvc
-      .occurrencesInRange(this.events(), rangeStart, rangeEnd)
+      .occurrencesInRange(this.events(), this.overrides(), rangeStart, rangeEnd)
       .filter(o => this.sameDay(o.start, date));
   }
 
@@ -168,7 +175,7 @@ export class CalendarComponent {
       dayGroup(day).tasks.push(t);
     }
 
-    for (const occ of this.eventSvc.occurrencesInRange(this.events(), today, windowEnd)) {
+    for (const occ of this.eventSvc.occurrencesInRange(this.events(), this.overrides(), today, windowEnd)) {
       const day = this.startOfDay(occ.start);
       if (day < today) continue;
       dayGroup(day).events.push(occ);
@@ -287,7 +294,140 @@ export class CalendarComponent {
     this.newEventAssignees.set([]);
   }
 
-  removeEvent(ev: CalendarEvent) {
-    if (ev.id) this.eventSvc.remove(ev.id);
+  // ---- per-occurrence identity ----
+  occKey(occ: EventOccurrence): string {
+    return `${occ.eventId}-${occ.originalStart.getTime()}`;
+  }
+
+  isRecurring(occ: EventOccurrence): boolean {
+    return occ.recurrence.freq !== 'none';
+  }
+
+  private eventById(id: string): CalendarEvent | undefined {
+    return this.events().find(e => e.id === id);
+  }
+
+  // ---- delete: single occurrence vs whole series ----
+  confirmDeleteKey = signal<string | null>(null);
+
+  requestDelete(occ: EventOccurrence) {
+    if (!this.isRecurring(occ)) {
+      this.eventSvc.remove(occ.eventId);
+      return;
+    }
+    this.confirmDeleteKey.set(this.occKey(occ));
+  }
+
+  cancelDelete() { this.confirmDeleteKey.set(null); }
+
+  isConfirmingDelete(occ: EventOccurrence): boolean {
+    return this.confirmDeleteKey() === this.occKey(occ);
+  }
+
+  async deleteThisOccurrence(occ: EventOccurrence) {
+    if (occ.overrideId) await this.eventSvc.removeOverride(occ.overrideId);
+    const ev = this.eventById(occ.eventId);
+    if (ev) await this.eventSvc.excludeOccurrence(ev, occ.originalStart);
+    this.confirmDeleteKey.set(null);
+  }
+
+  async deleteWholeSeries(occ: EventOccurrence) {
+    await this.eventSvc.removeSeries(occ.eventId, this.overrides());
+    this.confirmDeleteKey.set(null);
+  }
+
+  // ---- edit: single occurrence vs whole series ----
+  editingKey = signal<string | null>(null);
+  editTitle = '';
+  editDate = '';
+  editStart = '';
+  editEnd = '';
+  editAssignees = signal<string[]>([]);
+
+  isEditing(occ: EventOccurrence): boolean {
+    return this.editingKey() === this.occKey(occ);
+  }
+
+  startEdit(occ: EventOccurrence) {
+    this.editingKey.set(this.occKey(occ));
+    this.editTitle = occ.title;
+    this.editDate = this.toInputDate(occ.start);
+    this.editStart = this.toInputTime(occ.start);
+    this.editEnd = this.toInputTime(occ.end);
+    this.editAssignees.set([...occ.assignedTo]);
+    this.confirmDeleteKey.set(null);
+  }
+
+  cancelEdit() { this.editingKey.set(null); }
+
+  isEditAssignee(uid: string): boolean {
+    return this.editAssignees().includes(uid);
+  }
+
+  toggleEditAssignee(uid: string) {
+    const cur = this.editAssignees();
+    this.editAssignees.set(cur.includes(uid) ? cur.filter(x => x !== uid) : [...cur, uid]);
+  }
+
+  private buildEditTimes(): { start: Date; end: Date } | null {
+    if (!this.editTitle.trim() || !this.editDate || !this.editStart || !this.editEnd) return null;
+    const start = new Date(`${this.editDate}T${this.editStart}`);
+    const end = new Date(`${this.editDate}T${this.editEnd}`);
+    if (end <= start) return null;
+    return { start, end };
+  }
+
+  /** Save edits to the whole series (or the only occurrence, for non-recurring events). */
+  async saveEditWhole(occ: EventOccurrence) {
+    const times = this.buildEditTimes();
+    if (!times) return;
+    await this.eventSvc.update(occ.eventId, {
+      title: this.editTitle.trim(),
+      start: times.start,
+      end: times.end,
+      assignedTo: this.editAssignees(),
+    });
+    this.editingKey.set(null);
+  }
+
+  /** Save edits to just this occurrence of a recurring series, via an override. */
+  async saveEditThis(occ: EventOccurrence) {
+    const times = this.buildEditTimes();
+    const p = this.profile();
+    if (!times || !p) return;
+
+    if (occ.overrideId) {
+      await this.eventSvc.updateOverride(occ.overrideId, {
+        title: this.editTitle.trim(),
+        start: times.start,
+        end: times.end,
+        assignedTo: this.editAssignees(),
+      });
+    } else {
+      await this.eventSvc.addOverride({
+        familyId: p.familyId,
+        eventId: occ.eventId,
+        originalStart: occ.originalStart,
+        title: this.editTitle.trim(),
+        start: times.start,
+        end: times.end,
+        assignedTo: this.editAssignees(),
+        createdAt: new Date(),
+      });
+    }
+    this.editingKey.set(null);
+  }
+
+  private toInputDate(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  private toInputTime(d: Date): string {
+    const h = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    return `${h}:${min}`;
   }
 }

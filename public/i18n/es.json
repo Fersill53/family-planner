@@ -39,6 +39,11 @@
   "addEvent": "Añadir evento",
   "eventTitle": "Título del evento (p. ej. turno de trabajo)",
   "saveEvent": "Guardar evento",
+  "saveThis": "Guardar este evento",
+  "saveAll": "Guardar todos los eventos",
+  "cancel": "Cancelar",
+  "deleteThis": "Eliminar este evento",
+  "deleteAll": "Eliminar todos los eventos",
   "until": "Repetir hasta",
   "freq": {
     "none": "No se repite",

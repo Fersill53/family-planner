@@ -1,0 +1,78 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: is the request authenticated?
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper: the familyId of the signed-in user, read from their own user doc
+    function myFamilyId() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.familyId;
+    }
+
+    // USERS — each person's profile
+    match /users/{userId} {
+      // Anyone signed in can read profiles of people in their own family
+      // (needed so the task page can list family members)
+      allow read: if isSignedIn() &&
+                     resource.data.familyId == myFamilyId();
+
+      // You can only create your own profile, and only for yourself
+      allow create: if isSignedIn() &&
+                       request.auth.uid == userId &&
+                       request.resource.data.uid == userId;
+
+      // You can only update or delete your own profile
+      allow update, delete: if isSignedIn() &&
+                               request.auth.uid == userId;
+    }
+
+    // TASKS — the shared family to-do items
+    match /tasks/{taskId} {
+      // Read tasks only for your own family
+      allow read: if isSignedIn() &&
+                     resource.data.familyId == myFamilyId();
+
+      // Create a task only inside your own family
+      allow create: if isSignedIn() &&
+                       request.resource.data.familyId == myFamilyId();
+
+      // Update/delete a task only if it belongs to your family
+      allow update, delete: if isSignedIn() &&
+                               resource.data.familyId == myFamilyId();
+    }
+
+    // EVENTS — calendar events / job shifts (may recur)
+    match /events/{eventId} {
+      // Read events only for your own family
+      allow read: if isSignedIn() &&
+                     resource.data.familyId == myFamilyId();
+
+      // Create an event only inside your own family
+      allow create: if isSignedIn() &&
+                       request.resource.data.familyId == myFamilyId();
+
+      // Update/delete an event only if it belongs to your family
+      allow update, delete: if isSignedIn() &&
+                               resource.data.familyId == myFamilyId();
+    }
+
+    // EVENT OVERRIDES — per-occurrence edits to a recurring event
+    match /eventOverrides/{overrideId} {
+      // Read overrides only for your own family
+      allow read: if isSignedIn() &&
+                     resource.data.familyId == myFamilyId();
+
+      // Create an override only inside your own family
+      allow create: if isSignedIn() &&
+                       request.resource.data.familyId == myFamilyId();
+
+      // Update/delete an override only if it belongs to your family
+      allow update, delete: if isSignedIn() &&
+                               resource.data.familyId == myFamilyId();
+    }
+  }
+}

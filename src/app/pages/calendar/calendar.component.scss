@@ -158,10 +158,52 @@
       &.done .title { text-decoration: line-through; color: var(--ink-soft); }
       &.event-row { border-left: 3px solid var(--primary); }
       .recur { color: var(--primary); }
-      .del {
+      .del, .edit {
         background: none; border: none; color: var(--ink-soft); cursor: pointer; font-size: 0.85rem;
         padding: 0.15rem 0.35rem; border-radius: var(--radius-sm);
-        &:hover { color: #c26248; background: var(--warn-soft); }
+      }
+      .del:hover { color: #c26248; background: var(--warn-soft); }
+      .edit:hover { color: var(--primary); background: var(--primary-soft); }
+
+      .confirm-del {
+        border: none; background: var(--warn-soft); color: #b5673f; font-weight: 700;
+        font-size: 0.72rem; padding: 0.25rem 0.55rem; border-radius: var(--radius-pill); cursor: pointer;
+        &:hover { background: #f6ddc9; }
+      }
+      .cancel {
+        border: none; background: none; color: var(--ink-soft); font-weight: 600;
+        font-size: 0.72rem; padding: 0.25rem 0.4rem; cursor: pointer;
+        &:hover { color: var(--ink); }
+      }
+
+      &.edit-row {
+        flex-direction: column; align-items: stretch; gap: 0.55rem; background: var(--surface);
+        border: 2px solid var(--primary-soft);
+
+        input, select {
+          padding: 0.55rem 0.65rem; border: 2px solid var(--line); border-radius: var(--radius-sm);
+          font-size: 0.88rem; color: var(--ink); background: var(--bg);
+          &:focus { outline: none; border-color: var(--primary); background: var(--surface); }
+        }
+        .row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+          input { flex: 1 1 auto; }
+          .to { color: var(--ink-soft); font-weight: 700; }
+        }
+        .assignees { display: flex; flex-wrap: wrap; gap: 0.4rem;
+          .chip {
+            font-size: 0.78rem; font-weight: 600; padding: 0.3rem 0.65rem; border-radius: var(--radius-pill);
+            background: var(--bg); border: 2px solid var(--line); color: var(--ink); cursor: pointer;
+            &.active { background: var(--primary); border-color: var(--primary); color: var(--primary-ink); }
+          }
+        }
+        .edit-actions { display: flex; gap: 0.5rem; flex-wrap: wrap;
+          .save {
+            border: none; background: var(--primary); color: var(--primary-ink); font-weight: 700;
+            padding: 0.5rem 1rem; border-radius: var(--radius-pill); cursor: pointer; font-size: 0.85rem;
+            &:hover { transform: translateY(-1px); }
+          }
+          .cancel { font-size: 0.85rem; }
+        }
       }
     }
   }

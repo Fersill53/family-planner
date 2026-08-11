@@ -36,11 +36,39 @@ export interface CalendarEvent {
   location?: string;
   recurrence: EventRecurrence;
   createdAt: Date;
+  /** Original (series) occurrence start times that were individually deleted. */
+  excludedDates?: Date[];
+}
+
+/**
+ * A per-occurrence edit for one instance of a recurring CalendarEvent
+ * (e.g. "just this Tuesday's shift runs late"). Identified by which
+ * series it belongs to and the occurrence's original, un-edited start time.
+ */
+export interface EventOverride {
+  id?: string;
+  familyId: string;
+  eventId: string;
+  originalStart: Date;
+  title: string;
+  start: Date;
+  end: Date;
+  assignedTo: string[];
+  location?: string;
+  createdAt: Date;
 }
 
 /** A concrete, dated instance of a (possibly recurring) CalendarEvent, expanded for display. */
 export interface EventOccurrence {
-  event: CalendarEvent;
+  eventId: string;
+  title: string;
   start: Date;
   end: Date;
+  assignedTo: string[];
+  location?: string;
+  recurrence: EventRecurrence;
+  /** This occurrence's slot in the original, un-edited series — the key for overrides/exclusions. */
+  originalStart: Date;
+  /** Set if this occurrence's fields come from an EventOverride rather than the base series. */
+  overrideId?: string;
 }
