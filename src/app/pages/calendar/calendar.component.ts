@@ -9,6 +9,7 @@ import { AuthService } from '../../services/auth.service';
 import { TaskService } from '../../services/task.service';
 import { EventService } from '../../services/event.service';
 import { Task, FamilyMember, CalendarEvent, EventOccurrence, EventOverride, RecurrenceFreq } from '../../models';
+import { parseLocalDate } from '../../date-utils';
 
 type ViewMode = 'month' | 'week' | 'agenda';
 
@@ -279,7 +280,7 @@ export class CalendarComponent {
       assignedTo: this.newEventAssignees(),
       recurrence: {
         freq: this.newEventFreq,
-        until: this.newEventUntil ? new Date(this.newEventUntil) : null,
+        until: this.newEventUntil ? parseLocalDate(this.newEventUntil) : null,
       },
       createdAt: new Date(),
     };

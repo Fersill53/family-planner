@@ -8,6 +8,7 @@ import { switchMap, of } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { TaskService } from '../../services/task.service';
 import { Task, FamilyMember } from '../../models';
+import { parseLocalDate } from '../../date-utils';
 
 @Component({
   selector: 'app-tasks',
@@ -80,7 +81,7 @@ export class TasksComponent {
       familyId: p.familyId,
       title: this.newTitle.trim(),
       assignedTo: this.newAssignee || null,
-      dueDate: this.newDueDate ? new Date(this.newDueDate) : null,
+      dueDate: this.newDueDate ? parseLocalDate(this.newDueDate) : null,
       points: Number(this.newPoints) || 1,
       completed: false,
       createdAt: new Date(),
