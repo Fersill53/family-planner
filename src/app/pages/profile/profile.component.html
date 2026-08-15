@@ -20,6 +20,22 @@
         </select>
       </label>
 
+      <label>
+        {{ 'profile.color' | translate }}
+        <div class="palette">
+          @for (c of palette; track c) {
+            <button
+              type="button"
+              class="swatch"
+              [class.active]="color() === c"
+              [style.background]="c"
+              (click)="selectColor(c)"
+              [attr.aria-label]="c"
+            ></button>
+          }
+        </div>
+      </label>
+
       <div class="family-row">
         <span class="fam-label">{{ 'profile.family' | translate }}</span>
         <span class="fam-id">{{ p.familyId }}</span>
@@ -40,7 +56,7 @@
       <ul class="members">
         @for (m of members(); track m.uid) {
           <li>
-            <span class="avatar">{{ m.displayName.charAt(0) }}</span>
+            <span class="avatar" [style.background]="colorOf(m)">{{ m.displayName.charAt(0) }}</span>
             <span class="name">{{ m.displayName }}</span>
             @if (m.uid === p.uid) {
               <span class="you">{{ 'profile.you' | translate }}</span>

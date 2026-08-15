@@ -9,6 +9,7 @@ import { AuthService } from '../../services/auth.service';
 import { TaskService } from '../../services/task.service';
 import { Task, FamilyMember } from '../../models';
 import { parseLocalDate } from '../../date-utils';
+import { defaultColorFor } from '../../color-utils';
 
 @Component({
   selector: 'app-tasks',
@@ -65,6 +66,12 @@ export class TasksComponent {
   memberName(uid: string | null): string {
     if (!uid) return '';
     return this.members().find(m => m.uid === uid)?.displayName ?? '';
+  }
+
+  memberColor(uid: string | null): string {
+    if (!uid) return 'var(--ink-soft)';
+    const m = this.members().find(m => m.uid === uid);
+    return m ? (m.color || defaultColorFor(m.uid)) : 'var(--ink-soft)';
   }
 
   /** Firestore hands back a Timestamp, not a JS Date — normalise before the date pipe touches it. */

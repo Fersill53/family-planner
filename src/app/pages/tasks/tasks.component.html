@@ -14,6 +14,7 @@
           [class.active]="filterUid() === m.uid"
           (click)="toggleFilter(m.uid)"
         >
+          <span class="dot" [style.background]="memberColor(m.uid)"></span>
           {{ m.displayName }}: {{ pointsFor(m.uid) }}
         </button>
       }
@@ -45,7 +46,7 @@
   <!-- Task list -->
   <ul class="tasks">
     @for (t of visibleTasks(); track t.id) {
-      <li [class.done]="t.completed">
+      <li [class.done]="t.completed" [style.borderLeftColor]="memberColor(t.assignedTo)">
         <input type="checkbox" [checked]="t.completed" (change)="toggleComplete(t)" />
 
         <div class="body">

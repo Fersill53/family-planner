@@ -9,6 +9,7 @@ import { AuthService } from '../../services/auth.service';
 import { TaskService } from '../../services/task.service';
 import { LanguageService } from '../../services/language.service';
 import { FamilyMember } from '../../models';
+import { MEMBER_COLORS, defaultColorFor } from '../../color-utils';
 
 @Component({
   selector: 'app-profile',
@@ -36,6 +37,9 @@ export class ProfileComponent {
   // editable form state
   displayName = signal('');
   language = signal<'en' | 'es' | 'uk'>('en');
+  color = signal('');
+
+  palette = MEMBER_COLORS;
 
   saving = signal(false);
   saved = signal(false);
@@ -47,8 +51,15 @@ export class ProfileComponent {
       if (p) {
         this.displayName.set(p.displayName);
         this.language.set(p.language);
+        this.color.set(p.color || defaultColorFor(p.uid));
       }
     });
+  }
+
+  selectColor(c: string) { this.color.set(c); }
+
+  colorOf(m: FamilyMember): string {
+    return m.color || defaultColorFor(m.uid);
   }
 
   // live-preview language as they change the dropdown
@@ -67,6 +78,7 @@ export class ProfileComponent {
       await this.auth.updateMyProfile({
         displayName: this.displayName().trim() || p.displayName,
         language: this.language(),
+        color: this.color(),
       });
       this.lang.use(this.language());
       this.saved.set(true);

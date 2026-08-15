@@ -20,8 +20,9 @@
     "showAll": "Show all",
     "none": "No tasks yet - add one above"
   },
-  "profile": { 
+  "profile": {
     "language": "Language",
+    "color": "Your color",
     "save": "Save",
     "saved": "Saved!",
     "family": "Family",

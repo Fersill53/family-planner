@@ -3,6 +3,8 @@ export interface FamilyMember {
   displayName: string;
   language: 'en' | 'es' | 'uk';
   familyId: string;
+  /** Hex color this member picked to identify their tasks/events on the calendar. */
+  color?: string;
 }
 
 export interface Task {

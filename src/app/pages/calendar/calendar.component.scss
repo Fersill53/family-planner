@@ -96,9 +96,9 @@
     border-radius: 50%; display: flex; align-items: center; justify-content: center; }
   .dots { display: flex; gap: 3px; margin-top: 4px; }
   .dot {
-    width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+    width: 6px; height: 6px; border-radius: 50%; background: var(--ink-soft);
     &.done { background: var(--line); }
-    &.event { background: var(--primary); }
+    &.event { border-radius: 2px; }
   }
 }
 
@@ -117,6 +117,7 @@
 }
 
 .agenda-tasks li, .detail-tasks li {
+  border-left: 4px solid transparent;
   .title { font-weight: 600; color: var(--ink); }
   &.done .title { text-decoration: line-through; color: var(--ink-soft); }
 }
@@ -150,7 +151,6 @@
     li { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.75rem;
       background: var(--bg); border-radius: var(--radius-sm);
       .meta { font-size: 0.78rem; color: var(--ink-soft); display: flex; align-items: center; gap: 0.4rem; }
-      &.event-row { border-left: 3px solid var(--primary); }
       .recur { color: var(--primary); }
       .del, .edit {
         background: none; border: none; color: var(--ink-soft); cursor: pointer; font-size: 0.85rem;

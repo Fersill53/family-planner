@@ -10,6 +10,7 @@ import { TaskService } from '../../services/task.service';
 import { EventService } from '../../services/event.service';
 import { Task, FamilyMember, CalendarEvent, EventOccurrence, EventOverride, RecurrenceFreq } from '../../models';
 import { parseLocalDate } from '../../date-utils';
+import { defaultColorFor } from '../../color-utils';
 
 type ViewMode = 'month' | 'week' | 'agenda';
 
@@ -212,6 +213,17 @@ export class CalendarComponent {
 
   assigneeNames(uids: string[]): string {
     return uids.map(u => this.memberName(u)).filter(Boolean).join(', ');
+  }
+
+  memberColor(uid: string | null): string {
+    if (!uid) return 'var(--ink-soft)';
+    const m = this.members().find(m => m.uid === uid);
+    return m ? (m.color || defaultColorFor(m.uid)) : 'var(--ink-soft)';
+  }
+
+  /** Color for a multi-assignee event — uses the first assignee (agenda/detail views list everyone by name). */
+  firstAssigneeColor(uids: string[]): string {
+    return uids.length ? this.memberColor(uids[0]) : 'var(--ink-soft)';
   }
 
   // ---- interactions ----

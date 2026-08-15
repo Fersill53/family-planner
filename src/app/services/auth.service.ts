@@ -3,6 +3,7 @@ import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signO
 import { Firestore, doc, setDoc, docData, updateDoc } from '@angular/fire/firestore';
 import { Observable, of, switchMap } from 'rxjs';
 import { FamilyMember } from '../models';
+import { defaultColorFor } from '../color-utils';
 
 @Injectable({ providedIn: 'root' })
     export class AuthService {
@@ -32,6 +33,7 @@ import { FamilyMember } from '../models';
                 displayName,
                 language,
                 familyId,
+                color: defaultColorFor(cred.user.uid),
             };
 
             await runInInjectionContext(this.injector, () =>

@@ -20,8 +20,9 @@
     "showAll": "Mostrar todas",
     "none": "Aún no hay tareas — añade una arriba"
   },
-  "profile": { 
-    "language": "Idioma", 
+  "profile": {
+    "language": "Idioma",
+    "color": "Tu color",
     "save": "Guardar",
      "saved": "¡Guardado!",
     "family": "ID de familia",

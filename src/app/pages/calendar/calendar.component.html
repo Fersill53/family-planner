@@ -95,10 +95,10 @@
           @if (cell.tasks.length || cell.events.length) {
             <span class="dots">
               @for (t of cell.tasks.slice(0, 3); track t.id) {
-                <span class="dot task" [class.done]="t.completed"></span>
+                <span class="dot task" [class.done]="t.completed" [style.background]="t.completed ? null : memberColor(t.assignedTo)"></span>
               }
               @for (e of cell.events.slice(0, 3); track occKey(e)) {
-                <span class="dot event"></span>
+                <span class="dot event" [style.background]="firstAssigneeColor(e.assignedTo)"></span>
               }
             </span>
           }
@@ -140,7 +140,7 @@
           </div>
           <ul class="agenda-tasks">
             @for (e of group.events; track occKey(e)) {
-              <li class="event-row">
+              <li class="event-row" [style.borderLeftColor]="firstAssigneeColor(e.assignedTo)">
                 <span class="time">{{ e.start | date:'HH:mm' }}</span>
                 <span class="title">{{ e.title }}</span>
                 @if (e.assignedTo.length) {
@@ -149,7 +149,7 @@
               </li>
             }
             @for (t of group.tasks; track t.id) {
-              <li [class.done]="t.completed">
+              <li [class.done]="t.completed" [style.borderLeftColor]="memberColor(t.assignedTo)">
                 <span class="title">{{ t.title }}</span>
                 @if (t.assignedTo) {
                   <span class="who">{{ memberName(t.assignedTo) }}</span>
@@ -205,7 +205,7 @@
                 </div>
               </li>
             } @else {
-              <li class="event-row">
+              <li class="event-row" [style.borderLeftColor]="firstAssigneeColor(e.assignedTo)">
                 <span class="title">
                   {{ e.start | date:'HH:mm' }}–{{ e.end | date:'HH:mm' }} · {{ e.title }}
                 </span>
@@ -227,7 +227,7 @@
             }
           }
           @for (t of selectedTasks(); track t.id) {
-            <li [class.done]="t.completed">
+            <li [class.done]="t.completed" [style.borderLeftColor]="memberColor(t.assignedTo)">
               <span class="title">{{ t.title }}</span>
               <span class="meta">
                 @if (t.assignedTo) { {{ memberName(t.assignedTo) }} · }
