@@ -50,22 +50,6 @@
       }
     </div>
 
-    <!-- Household members -->
-    <div class="card">
-      <h2>{{ 'profile.household' | translate }}</h2>
-      <ul class="members">
-        @for (m of members(); track m.uid) {
-          <li>
-            <span class="avatar" [style.background]="colorOf(m)">{{ m.displayName.charAt(0) }}</span>
-            <span class="name">{{ m.displayName }}</span>
-            @if (m.uid === p.uid) {
-              <span class="you">{{ 'profile.you' | translate }}</span>
-            }
-          </li>
-        }
-      </ul>
-    </div>
-
     <button class="logout" (click)="logout()">{{ 'auth.logout' | translate }}</button>
   }
 </div>

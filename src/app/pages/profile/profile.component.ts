@@ -4,11 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { switchMap, of } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
-import { TaskService } from '../../services/task.service';
 import { LanguageService } from '../../services/language.service';
-import { FamilyMember } from '../../models';
 import { MEMBER_COLORS, defaultColorFor } from '../../color-utils';
 
 @Component({
@@ -20,19 +17,10 @@ import { MEMBER_COLORS, defaultColorFor } from '../../color-utils';
 })
 export class ProfileComponent {
   private auth = inject(AuthService);
-  private taskSvc = inject(TaskService);
   private lang = inject(LanguageService);
   private router = inject(Router);
 
   profile = toSignal(this.auth.profile$, { initialValue: null });
-
-  // family members (so you can see who's in your household)
-  members = toSignal(
-    this.auth.profile$.pipe(
-      switchMap(p => (p ? this.taskSvc.members$(p.familyId) : of([] as FamilyMember[])))
-    ),
-    { initialValue: [] as FamilyMember[] }
-  );
 
   // editable form state
   displayName = signal('');
@@ -57,10 +45,6 @@ export class ProfileComponent {
   }
 
   selectColor(c: string) { this.color.set(c); }
-
-  colorOf(m: FamilyMember): string {
-    return m.color || defaultColorFor(m.uid);
-  }
 
   // live-preview language as they change the dropdown
   onLanguageChange(lang: 'en' | 'es' | 'uk') {

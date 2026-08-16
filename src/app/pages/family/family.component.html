@@ -1,0 +1,24 @@
+<div class="page">
+  <header class="topbar">
+    <h1>{{ 'nav.family' | translate }}</h1>
+  </header>
+
+  @if (profile(); as p) {
+    <div class="card">
+      <ul class="members">
+        @for (m of ranked(); track m.uid) {
+          <li>
+            <span class="avatar" [style.background]="colorOf(m)">{{ m.displayName.charAt(0) }}</span>
+            <span class="name">
+              {{ m.displayName }}
+              @if (m.uid === p.uid) {
+                <span class="you">{{ 'profile.you' | translate }}</span>
+              }
+            </span>
+            <span class="points">{{ pointsFor(m.uid) }} pts</span>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+</div>
