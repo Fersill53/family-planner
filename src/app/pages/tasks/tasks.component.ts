@@ -51,8 +51,8 @@ export class TasksComponent {
   // filter: which member's tasks to show (null = everyone)
   filterUid = signal<string | null>(null);
 
-  // sum of points per member (open tasks only) — for the chips
-  pointsByMember = computed(() => this.taskSvc.loadByMember(this.tasks(), this.members()));
+  // points earned per member (completed tasks only) — for the chips
+  pointsByMember = computed(() => this.taskSvc.pointsByMember(this.tasks(), this.members()));
 
   pointsFor(uid: string): number {
     return this.pointsByMember().get(uid) ?? 0;
