@@ -75,13 +75,16 @@ export class TasksComponent {
   }
 
   /** Firestore hands back a Timestamp, not a JS Date — normalise before the date pipe touches it. */
-  dueDateOf(t: Task): Date | null {
-    const v: any = t.dueDate;
+  private toDate(v: any): Date | null {
     if (!v) return null;
     if (v instanceof Date) return v;
     if (typeof v.toDate === 'function') return v.toDate();
     return new Date(v);
   }
+
+  dueDateOf(t: Task): Date | null { return this.toDate(t.dueDate); }
+
+  createdOf(t: Task): Date | null { return this.toDate(t.createdAt); }
 
   toggleFilter(uid: string) {
     this.filterUid.set(this.filterUid() === uid ? null : uid);
