@@ -162,6 +162,18 @@
     &:hover { color: var(--danger); background: var(--warn-soft); }
   }
 
+  &.stale { background: var(--warn-soft); }
+
+  .stale-badge {
+    align-self: flex-start;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--danger);
+    background: #fbe3d2;
+    padding: 0.15rem 0.6rem;
+    border-radius: var(--radius-pill);
+  }
+
   &.done {
     opacity: 0.65;
     .title { text-decoration: line-through; color: var(--ink-soft); }

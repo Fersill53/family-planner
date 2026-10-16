@@ -12,6 +12,8 @@ import { parseLocalDate } from '../../date-utils';
 import { defaultColorFor } from '../../color-utils';
 import { IconComponent } from '../../components/icon/icon.component';
 
+const STALE_AFTER_DAYS = 5;
+
 @Component({
   selector: 'app-tasks',
   standalone: true,
@@ -86,6 +88,17 @@ export class TasksComponent {
   dueDateOf(t: Task): Date | null { return this.toDate(t.dueDate); }
 
   createdOf(t: Task): Date | null { return this.toDate(t.createdAt); }
+
+  /** Whole days since the task was created. */
+  daysOpen(t: Task): number {
+    const c = this.createdOf(t);
+    return c ? Math.floor((Date.now() - c.getTime()) / 86_400_000) : 0;
+  }
+
+  /** An unfinished task that has been open for more than 5 days — highlighted as a reminder. */
+  isStale(t: Task): boolean {
+    return !t.completed && this.daysOpen(t) > STALE_AFTER_DAYS;
+  }
 
   toggleFilter(uid: string) {
     this.filterUid.set(this.filterUid() === uid ? null : uid);

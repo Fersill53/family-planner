@@ -2,7 +2,7 @@ import { Component, input } from '@angular/core';
 
 export type IconName =
   | 'tasks' | 'calendar' | 'family' | 'profile'
-  | 'x' | 'pencil' | 'plus' | 'repeat'
+  | 'x' | 'pencil' | 'plus' | 'repeat' | 'clock'
   | 'chevron-left' | 'chevron-right' | 'arrow-right';
 
 /**
@@ -45,6 +45,9 @@ export type IconName =
         @case ('repeat') {
           <path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/>
           <path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>
+        }
+        @case ('clock') {
+          <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
         }
         @case ('chevron-left') { <path d="m15 18-6-6 6-6"/> }
         @case ('chevron-right') { <path d="m9 18 6-6-6-6"/> }

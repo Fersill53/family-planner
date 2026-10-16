@@ -19,6 +19,7 @@
     "unassigned": "Unassigned",
     "showAll": "Show all",
     "created": "Created",
+    "openDays": "Open {{days}} days",
     "none": "No tasks yet - add one above"
   },
   "profile": {

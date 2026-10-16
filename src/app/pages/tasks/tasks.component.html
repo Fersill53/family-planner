@@ -46,11 +46,16 @@
   <!-- Task list -->
   <ul class="tasks">
     @for (t of visibleTasks(); track t.id) {
-      <li [class.done]="t.completed" [style.borderLeftColor]="memberColor(t.assignedTo)">
+      <li [class.done]="t.completed" [class.stale]="isStale(t)" [style.borderLeftColor]="memberColor(t.assignedTo)">
         <input type="checkbox" [checked]="t.completed" (change)="toggleComplete(t)" />
 
         <div class="body">
           <span class="title">{{ t.title }}</span>
+          @if (isStale(t)) {
+            <span class="stale-badge">
+              <app-icon name="clock" /> {{ 'tasks.openDays' | translate:{ days: daysOpen(t) } }}
+            </span>
+          }
           <span class="meta">
             {{ 'tasks.assignedTo' | translate }}:
             <select [value]="t.assignedTo || ''" (change)="reassign(t, $any($event.target).value)">

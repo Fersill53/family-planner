@@ -19,6 +19,7 @@
     "unassigned": "Sin asignar",
     "showAll": "Mostrar todas",
     "created": "Creada",
+    "openDays": "Abierta {{days}} días",
     "none": "Aún no hay tareas — añade una arriba"
   },
   "profile": {
