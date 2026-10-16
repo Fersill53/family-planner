@@ -67,7 +67,7 @@
     font-weight: 700;
     cursor: pointer;
     transition: transform 0.1s ease, box-shadow 0.15s ease;
-    box-shadow: 0 4px 12px rgba(242, 145, 95, 0.3);
+    box-shadow: 0 4px 12px rgba(184, 74, 22, 0.3);
 
     &:hover:not(:disabled) { transform: translateY(-1px); }
     &:active:not(:disabled) { transform: translateY(0); }
@@ -75,7 +75,7 @@
   }
 
   .error {
-    color: #c26248;
+    color: var(--danger);
     font-size: 0.85rem;
     margin: 0;
     text-align: center;

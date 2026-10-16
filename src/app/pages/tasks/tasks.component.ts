@@ -10,11 +10,12 @@ import { TaskService } from '../../services/task.service';
 import { Task, FamilyMember } from '../../models';
 import { parseLocalDate } from '../../date-utils';
 import { defaultColorFor } from '../../color-utils';
+import { IconComponent } from '../../components/icon/icon.component';
 
 @Component({
   selector: 'app-tasks',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, IconComponent],
   templateUrl: './tasks.component.html',
   styleUrl: './tasks.component.scss',
 })

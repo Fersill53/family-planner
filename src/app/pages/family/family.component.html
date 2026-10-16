@@ -8,7 +8,7 @@
       <ul class="members">
         @for (m of ranked(); track m.uid) {
           <li>
-            <span class="avatar" [style.background]="colorOf(m)">{{ m.displayName.charAt(0) }}</span>
+            <span class="avatar" [style.background]="colorOf(m)" [style.color]="textOn(colorOf(m))">{{ m.displayName.charAt(0) }}</span>
             <span class="name">
               {{ m.displayName }}
               @if (m.uid === p.uid) {

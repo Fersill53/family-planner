@@ -32,7 +32,7 @@
     &:hover { border-color: var(--primary); color: var(--primary); }
   }
   .today-btn {
-    border: none; background: var(--accent-soft); color: var(--accent);
+    border: none; background: var(--accent-soft); color: var(--accent-ink);
     padding: 0.5rem 0.9rem;
   }
 }
@@ -109,7 +109,7 @@
   .num { font-weight: 700; font-size: 1.1rem; color: var(--ink); }
   .counts { display: flex; gap: 3px; }
   .count {
-    font-size: 0.7rem; font-weight: 700; color: #fff; background: var(--accent);
+    font-size: 0.7rem; font-weight: 700; color: #fff; background: var(--accent-ink);
     border-radius: var(--radius-pill); padding: 0.05rem 0.4rem;
     &.event { background: var(--primary); }
   }
@@ -156,11 +156,11 @@
         background: none; border: none; color: var(--ink-soft); cursor: pointer; font-size: 0.85rem;
         padding: 0.15rem 0.35rem; border-radius: var(--radius-sm);
       }
-      .del:hover { color: #c26248; background: var(--warn-soft); }
+      .del:hover { color: var(--danger); background: var(--warn-soft); }
       .edit:hover { color: var(--primary); background: var(--primary-soft); }
       .confirm-del, .cancel { border: none; cursor: pointer; font-size: 0.72rem; }
       .confirm-del {
-        background: var(--warn-soft); color: #b5673f; font-weight: 700;
+        background: var(--warn-soft); color: var(--danger); font-weight: 700;
         padding: 0.25rem 0.55rem; border-radius: var(--radius-pill);
         &:hover { background: #f6ddc9; }
       }

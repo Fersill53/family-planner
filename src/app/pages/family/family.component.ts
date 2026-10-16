@@ -6,7 +6,7 @@ import { switchMap, of } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { TaskService } from '../../services/task.service';
 import { Task, FamilyMember } from '../../models';
-import { defaultColorFor } from '../../color-utils';
+import { defaultColorFor, textOn } from '../../color-utils';
 
 @Component({
   selector: 'app-family',
@@ -50,4 +50,6 @@ export class FamilyComponent {
   colorOf(m: FamilyMember): string {
     return m.color || defaultColorFor(m.uid);
   }
+
+  textOn = textOn;
 }

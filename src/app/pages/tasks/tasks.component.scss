@@ -159,7 +159,7 @@
     font-size: 1rem;
     padding: 0.25rem 0.5rem;
     border-radius: var(--radius-sm);
-    &:hover { color: #c26248; background: var(--warn-soft); }
+    &:hover { color: var(--danger); background: var(--warn-soft); }
   }
 
   &.done {

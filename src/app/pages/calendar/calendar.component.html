@@ -1,7 +1,7 @@
 <div class="page">
   <header class="topbar">
     <h1>{{ 'nav.calendar' | translate }}</h1>
-    <button class="link" (click)="goToTasks()">{{ 'nav.tasks' | translate }} →</button>
+    <button class="link" (click)="goToTasks()">{{ 'nav.tasks' | translate }} <app-icon name="arrow-right" /></button>
   </header>
 
   <!-- View toggle -->
@@ -20,18 +20,18 @@
   <!-- Nav row (hidden for agenda) -->
   @if (view() !== 'agenda') {
     <div class="nav-row">
-      <button class="round" (click)="prev()">‹</button>
+      <button class="round" (click)="prev()"><app-icon name="chevron-left" /></button>
       <div class="label">
         {{ view() === 'month' ? monthLabel() : weekLabel() }}
       </div>
-      <button class="round" (click)="next()">›</button>
+      <button class="round" (click)="next()"><app-icon name="chevron-right" /></button>
       <button class="today-btn" (click)="today()">{{ 'cal.today' | translate }}</button>
     </div>
   }
 
   <!-- Add event -->
   <button class="add-event-toggle" (click)="toggleEventForm()" type="button">
-    + {{ 'cal.addEvent' | translate }}
+    <app-icon name="plus" /> {{ 'cal.addEvent' | translate }}
   </button>
 
   @if (showEventForm()) {
@@ -212,15 +212,15 @@
                 <span class="meta">
                   @if (e.assignedTo.length) { {{ assigneeNames(e.assignedTo) }} }
                   @if (isRecurring(e)) {
-                    <span class="recur">↻ {{ 'cal.freq.' + e.recurrence.freq | translate }}</span>
+                    <span class="recur"><app-icon name="repeat" /> {{ 'cal.freq.' + e.recurrence.freq | translate }}</span>
                   }
                   @if (isConfirmingDelete(e)) {
                     <button class="confirm-del" (click)="deleteThisOccurrence(e)">{{ 'cal.deleteThis' | translate }}</button>
                     <button class="confirm-del" (click)="deleteWholeSeries(e)">{{ 'cal.deleteAll' | translate }}</button>
                     <button class="cancel" (click)="cancelDelete()">{{ 'cal.cancel' | translate }}</button>
                   } @else {
-                    <button class="edit" (click)="startEdit(e)">✎</button>
-                    <button class="del" (click)="requestDelete(e)">✕</button>
+                    <button class="edit" (click)="startEdit(e)"><app-icon name="pencil" /></button>
+                    <button class="del" (click)="requestDelete(e)"><app-icon name="x" /></button>
                   }
                 </span>
               </li>

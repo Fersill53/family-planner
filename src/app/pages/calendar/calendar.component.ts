@@ -11,6 +11,7 @@ import { EventService } from '../../services/event.service';
 import { Task, FamilyMember, CalendarEvent, EventOccurrence, EventOverride, RecurrenceFreq } from '../../models';
 import { parseLocalDate } from '../../date-utils';
 import { defaultColorFor } from '../../color-utils';
+import { IconComponent } from '../../components/icon/icon.component';
 
 type ViewMode = 'month' | 'week' | 'agenda';
 
@@ -27,7 +28,7 @@ const AGENDA_WINDOW_DAYS = 60;
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, IconComponent],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss',
 })

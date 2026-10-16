@@ -52,12 +52,12 @@
     font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(242, 145, 95, 0.3);
+    box-shadow: 0 4px 12px rgba(184, 74, 22, 0.3);
     &:disabled { opacity: 0.55; cursor: default; box-shadow: none; }
   }
 
   .saved-msg {
-    margin: 0; text-align: center; color: var(--accent);
+    margin: 0; text-align: center; color: var(--accent-ink);
     font-weight: 700; font-size: 0.9rem;
   }
 }
@@ -73,5 +73,5 @@
   width: 100%; padding: 0.85rem; border: 2px solid var(--line);
   border-radius: var(--radius-pill); background: var(--surface);
   color: var(--ink-soft); font-weight: 700; font-size: 0.95rem; cursor: pointer;
-  &:hover { border-color: #e0b0a0; color: #c26248; }
+  &:hover { border-color: #e0b0a0; color: var(--danger); }
 }

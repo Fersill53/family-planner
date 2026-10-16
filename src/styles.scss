@@ -7,17 +7,19 @@
   --bg:          #fdf8f3;   /* warm cream background */
   --surface:     #ffffff;   /* cards */
   --ink:         #4a4038;   /* warm dark brown text */
-  --ink-soft:    #8a7d72;   /* muted secondary text */
+  --ink-soft:    #756a60;   /* muted secondary text (5:1 on white) */
 
-  --primary:     #f2915f;   /* soft terracotta/peach */
+  --primary:     #b84a16;   /* terracotta — white text on it is 5.2:1 */
   --primary-ink: #ffffff;
   --primary-soft:#fdece2;   /* peach tint for backgrounds */
 
-  --accent:      #7bb6a1;   /* sage green */
+  --accent:      #7bb6a1;   /* sage green (decorative fills only) */
+  --accent-ink:  #3d7561;   /* deeper sage for text/badges on light or white */
   --accent-soft: #e6f2ed;
 
   --warn:        #e8956b;   /* gentle orange for imbalance */
   --warn-soft:   #fdf0e6;
+  --danger:      #a2401f;   /* destructive/error text, 5.6:1 on warn-soft */
 
   --line:        #f0e6dc;   /* soft warm border */
 

@@ -65,7 +65,7 @@
           </span>
         </div>
 
-        <button class="del" (click)="removeTask(t)">✕</button>
+        <button class="del" (click)="removeTask(t)"><app-icon name="x" /></button>
       </li>
     } @empty {
       <li class="empty">{{ 'tasks.none' | translate }}</li>
