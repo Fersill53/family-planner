@@ -1,5 +1,5 @@
 .page {
-  max-width: 720px;
+  max-width: var(--page-max);
   margin: 0 auto;
   padding: 1.25rem 1.25rem 5rem;
 }
@@ -105,8 +105,9 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  /* one column on phones, two or more on wide screens */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr));
   gap: 0.7rem;
 }
 
@@ -180,6 +181,7 @@
   }
 
   &.empty {
+    grid-column: 1 / -1;
     justify-content: center;
     color: var(--ink-soft);
     border: 2px dashed var(--line);

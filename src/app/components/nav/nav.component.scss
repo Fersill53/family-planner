@@ -36,7 +36,7 @@
 /* Desktop/tablet: top bar, centered */
 @media (min-width: 769px) {
   .nav {
-    max-width: 720px;
+    max-width: var(--page-max);
     margin: 0 auto 1rem;
     border-radius: 0 0 var(--radius) var(--radius);
     position: sticky;

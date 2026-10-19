@@ -33,6 +33,17 @@
   /* Type */
   --font-display: 'Quicksand', system-ui, sans-serif;
   --font-body:    'Nunito', system-ui, sans-serif;
+
+  /* Layout: data-heavy pages (tasks, calendar) and the nav get wider on desktop */
+  --page-max:   720px;
+  --cell-ratio: 1;       /* month-grid cell shape: square on phones, wider on desktop */
+}
+
+@media (min-width: 1000px) {
+  :root {
+    --page-max:   1100px;
+    --cell-ratio: 1.5;
+  }
 }
 
 /* ---- Base ---- */

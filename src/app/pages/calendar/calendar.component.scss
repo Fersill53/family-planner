@@ -1,4 +1,4 @@
-.page { max-width: 720px; margin: 0 auto; padding: 1.25rem 1.25rem 5rem; }
+.page { max-width: var(--page-max); margin: 0 auto; padding: 1.25rem 1.25rem 5rem; }
 
 .topbar {
   display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;
@@ -88,7 +88,7 @@
 }
 
 .day-cell {
-  aspect-ratio: 1; display: flex; flex-direction: column; align-items: center;
+  aspect-ratio: var(--cell-ratio); display: flex; flex-direction: column; align-items: center;
   justify-content: flex-start; padding: 0.35rem 0; position: relative;
   .num { font-weight: 700; font-size: 0.9rem; color: var(--ink); }
   &.dim { opacity: 0.4; box-shadow: none; background: transparent; }
